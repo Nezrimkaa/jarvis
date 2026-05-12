@@ -45,8 +45,20 @@ class LLMClient:
         self.provider = provider
         self.temperature = temperature
         self.max_tokens = max_tokens
-        self._client = httpx.AsyncClient(timeout=120.0)
         logger.info(f"LLM: {provider} | model: {model} | endpoint: {endpoint}")
+
+    async def _request(self, payload: dict) -> dict:
+        async with httpx.AsyncClient(timeout=120.0) as client:
+            response = await client.post(
+                f"{self.endpoint}/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self.api_key.get_secret_value()}",
+                    "Content-Type": "application/json",
+                },
+                json=payload,
+            )
+            response.raise_for_status()
+            return response.json()
 
     async def chat(
         self,
@@ -68,16 +80,7 @@ class LLMClient:
         }
 
         try:
-            response = await self._client.post(
-                f"{self.endpoint}/chat/completions",
-                headers={
-                    "Authorization": f"Bearer {self.api_key.get_secret_value()}",
-                    "Content-Type": "application/json",
-                },
-                json=payload,
-            )
-            response.raise_for_status()
-            data = response.json()
+            data = await self._request(payload)
             return data["choices"][0]["message"]["content"]
         except httpx.HTTPStatusError as e:
             msg = f"API error ({e.response.status_code}): {e.response.text[:200]}"
@@ -88,4 +91,4 @@ class LLMClient:
             raise LLMError(f"Invalid API response: {e}") from e
 
     async def close(self):
-        await self._client.aclose()
+        pass
