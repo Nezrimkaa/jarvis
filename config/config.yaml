@@ -1,0 +1,50 @@
+# Jarvis Assistant Configuration
+# API keys stored in .env file (loaded automatically)
+
+app:
+  name: "Jarvis"
+  version: "0.1.0"
+  hotkey: "ctrl+win+z"  # Global activation hotkey
+
+audio:
+  stt:
+    engine: "vosk"
+    model_path: "models/vosk-model-small-ru-0.22"
+    sample_rate: 16000
+  tts:
+    engine: "piper"
+    model_path: "models/piper-voices"
+    voice: "ru_RU-irina-medium"
+
+llm:
+  provider: "github"  # "github" (free) or "deepseek"
+  model: "gpt-4o-mini"
+  temperature: 0.3
+  max_tokens: 4096
+  endpoint: "https://models.inference.ai.azure.com"
+  # DeepSeek (резерв)
+  deepseek_endpoint: "https://api.deepseek.com/v1"
+  deepseek_model: "deepseek-coder"
+  # GitHub Models (бесплатно)
+  github_endpoint: "https://models.inference.ai.azure.com"
+  github_model: "gpt-4o-mini"
+
+github:
+  token_env: "GITHUB_TOKEN"  # Load from env variable
+  default_repo: ""
+
+ui:
+  tray_tooltip: "Jarvis Assistant"
+  overlay_width: 400
+  overlay_height: 300
+  overlay_opacity: 0.9
+
+logging:
+  level: "DEBUG"
+  file: "logs/jarvis.log"
+  max_size_mb: 10
+  retention_days: 7
+
+session:
+  history_size: 50
+  context_timeout_minutes: 30

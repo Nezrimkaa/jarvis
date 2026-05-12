@@ -1,0 +1,29 @@
+[project]
+name = "jarvis"
+version = "0.1.0"
+description = "Jarvis - голосовой ассистент для Windows"
+requires-python = ">=3.11"
+dependencies = [
+    "pydantic>=2.0",
+    "pydantic-settings>=2.0",
+    "PyYAML>=6.0",
+    "requests>=2.31",
+    "vosk>=0.3.45",
+    "sounddevice>=0.4.6",
+    "piper-tts>=1.4",
+    "pystray>=0.19",
+    "Pillow>=10.0",
+    "keyboard>=0.13.5",
+    "pywin32>=305",
+    "pywinauto>=0.6.8",
+    "PyAutoGUI>=0.9.54",
+    "playwright>=1.40",
+    "GitPython>=3.1",
+    "PyGithub>=2.1",
+    "loguru>=0.7",
+    "httpx>=0.26",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
