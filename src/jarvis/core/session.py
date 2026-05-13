@@ -11,7 +11,7 @@ class Session:
     dialog: list = field(default_factory=list)
     context: dict = field(default_factory=lambda: {
         "state": "idle",
-        "current_dir": os.getcwd(),
+        "current_dir": str(Path.home()),
         "desktop": str(Path.home() / "Desktop"),
         "username": os.environ.get("USERNAME", "unknown"),
         "last_command": None,

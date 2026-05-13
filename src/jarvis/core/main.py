@@ -26,6 +26,35 @@ from jarvis.utils.security import get_deepseek_key, get_github_token
 logger = get_logger("jarvis")
 
 
+LANG_EXTENSIONS = {
+    "python": ".py", "py": ".py", "пайтон": ".py", "питон": ".py",
+    "javascript": ".js", "js": ".js",
+    "typescript": ".ts", "ts": ".ts",
+    "html": ".html",
+    "css": ".css",
+    "java": ".java",
+    "cpp": ".cpp", "c++": ".cpp",
+    "c": ".c",
+    "go": ".go", "golang": ".go",
+    "rust": ".rs",
+    "ruby": ".rb",
+    "php": ".php",
+    "swift": ".swift",
+    "kotlin": ".kt",
+    "sql": ".sql",
+    "bash": ".sh", "sh": ".sh", "shell": ".sh",
+    "yaml": ".yaml", "yml": ".yaml",
+    "json": ".json",
+    "xml": ".xml",
+    "markdown": ".md", "md": ".md", "mdown": ".md",
+    "txt": ".txt", "text": ".txt",
+    "csv": ".csv",
+    "bat": ".bat", "batch": ".bat",
+    "ps1": ".ps1", "powershell": ".ps1",
+    "dockerfile": "Dockerfile",
+}
+
+
 class JarvisAssistant:
     def __init__(self):
         self.config = load_config()
@@ -160,21 +189,36 @@ class JarvisAssistant:
         if self.llm_client:
             await self.llm_client.close()
 
+    DESKTOP_ALIASES = {"desktop", "рабочий стол", "рабочем столе", "десктоп", "стол"}
+
     def _resolve_path(self, path: str | None) -> str:
+        if path and path.lower() in self.DESKTOP_ALIASES:
+            return self.session.context.get("desktop", str(Path.home() / "Desktop"))
         if path and Path(path).is_absolute():
             return path
         base = path or self.session.context.get("current_dir", ".")
         return str(Path(self.session.context.get("current_dir", ".")) / (path or ""))
 
+    def _resolve_extension(self, filename: str, content: str = "") -> str:
+        name = Path(filename)
+        if name.suffix:
+            return filename
+        ext = LANG_EXTENSIONS.get(filename.lower())
+        if ext:
+            return filename + ext
+        if content:
+            return filename + ".txt"
+        return filename
+
     def _handle_file_create(self, intent, entities, session):
         filename = entities.get("filename", "untitled.txt")
-        path = entities.get("path") or entities.get("content")
         content = entities.get("content", "")
-        full = str(Path(self._resolve_path(None)) / filename) if not entities.get("path") else self._resolve_path(entities.get("path", ""))
-        if entities.get("path"):
-            full = str(Path(entities["path"]) / filename) if not Path(entities["path"]).suffix else entities["path"]
-        if content and not Path(full).suffix:
-            full = full + ".txt"
+        raw_path = entities.get("path", "")
+
+        dir_path = self._resolve_path(raw_path) if raw_path else self._resolve_path(None)
+        filename = self._resolve_extension(filename, content)
+        full = str(Path(dir_path) / filename)
+
         ok = self.file_ops.create_file(full, content)
         if ok:
             self.session.update_context("last_file", full)
@@ -206,7 +250,8 @@ class JarvisAssistant:
 
     def _handle_folder_create(self, intent, entities, session):
         name = entities.get("foldername", "new_folder")
-        path = entities.get("path", self._resolve_path(None))
+        raw_path = entities.get("path", "")
+        path = self._resolve_path(raw_path) if raw_path else self._resolve_path(None)
         full = str(Path(path) / name)
         ok = self.file_ops.create_folder(full)
         return f"✅ Папка {name} создана" if ok else f"❌ Не удалось создать папку"

@@ -60,6 +60,14 @@ shell.run — выполнить команду. Параметры: command
 6. Для file.create/content указывай небольшие примеры кода, если просят
 7. Отвечай на том же языке, что и пользователь
 
+=== ВАЖНО: ПУТИ И РАСШИРЕНИЯ ===
+- Для рабочего стола всегда используй path=desktop
+  Пример: "создай файл на рабочем столе" → [ACTION: file.create] filename=test.txt path=desktop
+- Всегда указывай расширение в filename! "пайтон/python" → script.py, "js" → app.js и т.д.
+  Пример: "создай файл пайтон" → [ACTION: file.create] filename=script.py path=desktop
+  Пример: "создай html файл" → [ACTION: file.create] filename=index.html path=desktop
+- Если пользователь сказал "на рабочем столе"/"на десктопе" → path=desktop
+
 === КОНТЕКСТ СЕССИИ ===
 {session_context}
 
