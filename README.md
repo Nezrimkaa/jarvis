@@ -90,16 +90,9 @@ pyinstaller jarvis.spec
 | **Git** | GitPython + PyGitHub |
 | **GUI** | `tkinter` (чат) + `pystray` (трей) |
 
-### Альтернативные провайдеры LLM
+### Провайдеры LLM
 
-По умолчанию используется **GitHub Models** (бесплатно, нужен GitHub токен). Можно переключить на **DeepSeek API** в `config/config.yaml`:
-
-```yaml
-llm:
-  provider: "deepseek"  # изменить с "github" на "deepseek"
-```
-
-DeepSeek даёт $5 бесплатных кредитов при регистрации на [platform.deepseek.com](https://platform.deepseek.com).
+Используется **GitHub Models** (бесплатно, нужен GitHub токен из .env). Достаточно 5 USD кредитов Azure — GPT-4o-mini очень дешёвый.
 
 ---
 
